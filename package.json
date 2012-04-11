@@ -2,6 +2,7 @@
   "name": "time-attack-online-server",
   "version": "0.0.1",
   "dependencies": {
-    "express": "2.5.9"
+    "express": ">= 2.5.9"
+    "pg": ">= 0.6.17"
   }
 }
