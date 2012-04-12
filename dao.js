@@ -1,6 +1,9 @@
 var Dao = function (client) {
     /** @private */
     this.client_ = client;
+    existsTableAsync('time_attack_events', function (exists) {
+
+    });
 };
 
 Dao.getTimeAttackEvent = function (passPhrase) {
@@ -32,8 +35,8 @@ Dao.addTimeAttackEvent = function (passPhrase) {
 };
 
 /** @private */
-Dao.existsTableAsync_ = function (tableName, callback) {
-    var query = this.client_.query('SHOW TABLE STATUS FROM $1', [tableName]);
+function existsTableAsync(client, tableName, callback) {
+    var query = client.query('SHOW TABLE STATUS FROM $1', [tableName]);
     query.on('error', onError);
     var exists = false;
     query.on('row', function (row) {
@@ -46,7 +49,7 @@ Dao.existsTableAsync_ = function (tableName, callback) {
         console.log('PG: End: ' + row.toString() + error.toString());
         callback(exists);
     });
-};
+}
 
 function onError(error) {
     throw new Error('PG: Error: ' + error.toString());
