@@ -3,6 +3,10 @@ exports.initialize = function (express, pg) {
     initializeDB(pg);
 };
 
+var Dao = require('./dao').Dao;
+
+var dao;
+
 function initializeServer(express) {
     console.log('Initialize: server');
     var server = express.createServer();
@@ -18,11 +22,20 @@ function initializeServerCommands(server) {
     server.get('/get', function(req, res) {
         try {
             var passPhrase = req.param('pass-phrase');
-
-            // TODO: DB Access
+            if (passPhrase === undefined) {
+                res.send(400);
+                return;
+            }
             var timeAttackEvent = {};
-            timeAttackEvent.title = '';
-            timeAttackEvent.startTime = new Date();
+            if (dao === undefined) {
+//                res.send(500);
+//                return;
+                timeAttackEvent.title = '';
+                timeAttackEvent.startTime = new Date();
+            } else {
+                dao.getTimeAttackEvent(passPhrase);
+            }
+            // TODO: DB Access
 
             if (timeAttackEvent === null) {
                 res.send('failure');
@@ -34,7 +47,7 @@ function initializeServerCommands(server) {
             }));
             return;
         } catch (e) {
-            res.send('failure');
+            res.send(e.toString(), 500);
             return;
         }
     });
@@ -43,12 +56,21 @@ function initializeServerCommands(server) {
             var passPhrase = req.param('pass-phrase');
             var title = req.param('title');
             var startTime = new Date(req.param('start-time'));
+            if (passPhrase === undefined ||
+                title === undefined ||
+                startTime === undefined) {
+                res.send(400);
+                return;
+            }
+            console.log(startTime.toString());
+
 
             // TODO: DB Access
 
             res.send('success');
         } catch (e) {
-            res.send('failure');
+            res.send(e.toString(), 500);
+            return;
         }
     });
 }
@@ -61,6 +83,7 @@ function initializeDB(pg) {
         return;
     }
     pg.connect(process.env.DATABASE_URL, function(error, client) {
-      console.log('Initialize: DB --> Succeeded.');
+        dao = new Dao(client);
+        console.log('Initialize: DB --> Succeeded. ' + error.toString());
     });
 }
