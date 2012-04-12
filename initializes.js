@@ -20,11 +20,11 @@ function initializeServerCommands(server) {
             var passPhrase = req.param('pass-phrase');
 
             // TODO: DB Access
-            var timeAttackEvent = new object();
+            var timeAttackEvent = {};
             timeAttackEvent.title = '';
             timeAttackEvent.startTime = new Date();
 
-            if (timeAttackEvent == null) {
+            if (timeAttackEvent === null) {
                 res.send('failure');
                 return;
             }
