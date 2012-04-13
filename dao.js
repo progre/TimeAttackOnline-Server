@@ -6,7 +6,7 @@ var Dao = function (client) {
     });
 };
 
-Dao.getTimeAttackEvent = function (passPhrase) {
+Dao.getTimeAttackEventAsync = function (passPhrase, callback) {
     var rows = [];
     var query = this.client_.query('SELECT * FROM time_attack_events WHERE pass_phrase = $1', [passPhrase]);
     query.on('error', function (error) {
@@ -21,7 +21,7 @@ Dao.getTimeAttackEvent = function (passPhrase) {
     });
 };
 
-Dao.addTimeAttackEvent = function (passPhrase) {
+Dao.addTimeAttackEventAsync = function (passPhrase, callback) {
     var rows = [];
     var query = this.client_.query('SELECT * FROM time_attack_events WHERE pass_phrase = $1', [passPhrase]);
     query.on('error', onError);
@@ -43,9 +43,6 @@ function existsTableAsync(client, tableName, callback) {
         exists = true;
     });
     query.on('end', function (row, error) {
-        if (exists) {
-            throw new Error('attayo');
-        }
         console.log('PG: End: ' + row.toString() + error.toString());
         callback(exists);
     });

@@ -3,6 +3,7 @@ exports.initialize = function (express, pg) {
     initializeDB(pg);
 };
 
+var ServerCommandsModel = require('./servercommandsmodel').ServerCommandsModel;
 var Dao = require('./dao').Dao;
 
 var dao;
@@ -19,38 +20,8 @@ function initializeServer(express) {
 }
 
 function initializeServerCommands(server) {
-    server.get('/get', function(req, res) {
-        try {
-            var passPhrase = req.param('pass-phrase');
-            if (passPhrase === undefined) {
-                res.send(400);
-                return;
-            }
-            var timeAttackEvent = {};
-            if (dao === undefined) {
-//                res.send(500);
-//                return;
-                timeAttackEvent.title = '';
-                timeAttackEvent.startTime = new Date();
-            } else {
-                dao.getTimeAttackEvent(passPhrase);
-            }
-            // TODO: DB Access
-
-            if (timeAttackEvent === null) {
-                res.send('failure');
-                return;
-            }
-            res.send(JSON.stringify({
-                title:timeAttackEvent.title,
-                'start-time':timeAttackEvent.startTime.toString()
-            }));
-            return;
-        } catch (e) {
-            res.send(e.toString(), 500);
-            return;
-        }
-    });
+    var serverCommandsModel = new ServerCommandsModel(dao);
+    server.get('/get', serverCommandsModel.get);
     server.get('/add', function(req, res) {
         try {
             var passPhrase = req.param('pass-phrase');
