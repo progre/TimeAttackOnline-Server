@@ -4,30 +4,45 @@ var ServerCommandsModel = function (dao) {
 };
 
 ServerCommandsModel.prototype.get = function (request, response) {
-    try {
+    tryFunction (response, function () {
         var passPhrase = request.param('pass-phrase');
         if (passPhrase === undefined) {
             response.send(400);
             return;
         }
+        var resProc = new ResponseProcessor(response);
         if (this.dao_ === undefined) {
-//            response.send(500);
-//            return;
+        //            response.send(500);
+        //            return;
             var timeAttackEvent = {};
             timeAttackEvent.title = '';
             timeAttackEvent.startTime = new Date();
-            new ResponseProcessor(response).onTimeAttackEventGet(timeAttackEvent);
-            return;
-        } else {
-            this.dao_.getTimeAttackEventAsync(passPhrase,
-                new ResponseProcessor(response).onTimeAttackEventGet);
+            resProc.onTimeAttackEventGet(timeAttackEvent);
             return;
         }
-    } catch (e) {
-        response.send(e.toString(), 500);
-        return;
-    }
+        this.dao_.getTimeAttackEventAsync(passPhrase,
+            resProc.onTimeAttackEventGet);
+    });
 };
+
+ServerCommandsModel.prototype.set = function(request, response) {
+    tryFunction (response, function () {
+        var passPhrase = request.param('pass-phrase');
+        var title = request.param('title');
+        var startTime = new Date(request.param('start-time'));
+        if (passPhrase === undefined ||
+            title === undefined ||
+            startTime === undefined) {
+            response.send(400);
+            return;
+        }
+
+        // TODO: DB Access
+
+        response.send('success');
+    });
+};
+
 
 var ResponseProcessor = function (response){
     /** @private */
@@ -44,5 +59,14 @@ ResponseProcessor.prototype.onTimeAttackEventGet = function (timeAttackEvent) {
         'start-time':timeAttackEvent.startTime.toString()
     }));
 };
+
+function tryFunction(response, callback) {
+    try {
+        callback();
+    } catch (e) {
+        response.send(e.toString(), 500);
+        return;
+    }
+}
 
 exports.ServerCommandsModel = ServerCommandsModel;
