@@ -4,9 +4,9 @@ var DaoTest = function (dao) {
 
 DaoTest.prototype.test = function (response) {
     var message = '<p>\nStart dao test-->\n';
-    if (this.dao_ === undefined || this.dao_ === null){
-        message += 'dao is ' + this.dao_;
-    }
+    message += 'dao is ' + this.dao_ + '\n';
+    message += 'dao.client is ' + this.dao_.client + '\n';
+    message += 'dao.client_ is ' + this.dao_.client_ + '\n';
     this.dao_.existsTableAsync(this.dao_.client_, "test_table", function (exists) {
         message += 'table exists: ' + exists;
         message += '<--end of dao test</p>';
