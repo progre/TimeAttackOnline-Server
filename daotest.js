@@ -7,3 +7,5 @@ DaoTest.prototype.test = function (response) {
     message += '<--end of dao test';
     response.send(message);
 };
+
+exports.DaoTest = DaoTest;
