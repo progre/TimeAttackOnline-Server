@@ -1,17 +1,16 @@
 exports.initialize = function (express, pg) {
-    initializeServer(express);
-    initializeDB(pg);
+    var dao = initializeDBAsync(pg, function (dao) {
+        initializeServer(express, dao);
+    });
 };
 
 var ServerCommandsModel = require('./servercommandsmodel').ServerCommandsModel;
 var Dao = require('./dao').Dao;
 
-var dao;
-
-function initializeServer(express) {
+function initializeServer(express, dao) {
     console.log('Initialize: server');
     var server = express.createServer();
-    initializeServerCommands(server);
+    initializeServerCommands(server, dao);
     var port = process.env.PORT || process.env.C9_PORT;
     server.listen(port, function() {
         console.log('Initialize: server --> Succeeded.');
@@ -19,7 +18,7 @@ function initializeServer(express) {
     });
 }
 
-function initializeServerCommands(server) {
+function initializeServerCommands(server, dao) {
     var serverCommandsModel = new ServerCommandsModel(dao);
     server.get('/get', serverCommandsModel.get);
     server.get('/add', function(req, res) {
@@ -47,15 +46,18 @@ function initializeServerCommands(server) {
     server.get('/daotest', serverCommandsModel.daoTest);
 }
 
-function initializeDB(pg) {
+function initializeDBAsync(pg, callback) {
     console.log('Initialize: DB');
     if (!('DATABASE_URL' in process.env))
     {
         console.log('Initialize: DB --> has no database.');
+        callback(null);
         return;
     }
     pg.connect(process.env.DATABASE_URL, function(error, client) {
-        dao = new Dao(client);
+        var dao = new Dao(client);
         console.log('Initialize: DB --> Succeeded. ' + error.toString());
+        callback(dao);
+        return;
     });
 }
