@@ -3,9 +3,12 @@ var DaoTest = function (dao) {
 };
 
 DaoTest.prototype.test = function (response) {
-    var message = 'Start dao test-->\n';
-    message += '<--end of dao test';
-    response.send(message);
+    var message = '<p>\nStart dao test-->\n';
+    this.dao_.existsTableAsync(this.dao_.client, "test_table", function (exists) {
+        message += 'table exists: ' + exists;
+        message += '<--end of dao test</p>';
+        response.send(message);
+    });
 };
 
 exports.DaoTest = DaoTest;
