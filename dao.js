@@ -1,8 +1,7 @@
 var Dao = function (client) {
     /* private */
     this.client_ = client;
-    this.client = client;
-    initializeTables(client);
+    //initializeTables(client);
 };
 
 Dao.prototype.getTimeAttackEventAsync = function (passPhrase, callback) {
