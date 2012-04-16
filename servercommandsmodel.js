@@ -43,6 +43,13 @@ ServerCommandsModel.prototype.set = function(request, response) {
     });
 };
 
+ServerCommandsModel.prototype.daoTest = function(request, response) {
+    tryFunction (response, function () {
+        var daotest = require('./daotest');
+        new daotest.DaoTest(this.dao_).test(response);
+    });
+};
+
 
 var ResponseProcessor = function (response){
     /** @private */

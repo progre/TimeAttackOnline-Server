@@ -44,6 +44,7 @@ function initializeServerCommands(server) {
             return;
         }
     });
+    server.get('/daotest', serverCommandsModel.daoTest);
 }
 
 function initializeDB(pg) {
