@@ -1,5 +1,5 @@
 var Dao = function (client) {
-    /** @private */
+    /* private */
     this.client_ = client;
     initializeTables(client);
 };
