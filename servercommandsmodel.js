@@ -4,42 +4,54 @@ function ServerCommandsModel(dao) {
 }
 
 ServerCommandsModel.prototype.get = function (request, response) {
+    var self = this;
     tryFunction (response, function () {
         var passPhrase = request.param('pass-phrase');
         if (passPhrase === undefined) {
             response.send(400);
             return;
         }
-        var resProc = new ResponseProcessor(response);
-        if (this.dao_ === undefined) {
-        //            response.send(500);
-        //            return;
-            var timeAttackEvent = {};
-            timeAttackEvent.title = '';
-            timeAttackEvent.startTime = new Date();
-            resProc.onTimeAttackEventGet(timeAttackEvent);
-            return;
-        }
-        this.dao_.getTimeAttackEventAsync(passPhrase,
-            resProc.onTimeAttackEventGet);
+        self.dao_.getTimeAttackEventAsync(passPhrase, function (timeAttackEvent) {
+            if (timeAttackEvent === null) {
+                response.send(JSON.stringify({result: "failure"}));
+                return;
+            }
+            response.send(JSON.stringify(
+                {
+                    result: "success",
+                    title: timeAttackEvent.title,
+                    "start-date": timeAttackEvent.startDate
+                }
+            ));
+        });
     });
 };
 
-ServerCommandsModel.prototype.set = function(request, response) {
+ServerCommandsModel.prototype.add = function(request, response) {
+    var self = this;
     tryFunction (response, function () {
         var passPhrase = request.param('pass-phrase');
         var title = request.param('title');
-        var startTime = new Date(request.param('start-time'));
+        var startDate = new Date(request.param('start-date'));
+        console.log('start-date: ' + startDate.toString());
         if (passPhrase === undefined ||
             title === undefined ||
-            startTime === undefined) {
+            startDate === undefined) {
             response.send(400);
             return;
         }
-
-        // TODO: DB Access
-
-        response.send('success');
+        if (passPhrase.length < 6) {
+            response.send(400);
+        }
+        var timeAttackEvent = {};
+        timeAttackEvent.title = title;
+        timeAttackEvent.startDate = startDate;
+        self.dao_.addTimeAttackEventAsync(passPhrase, timeAttackEvent, function (success) {
+            if (!success) {
+                response.send('failure');
+            }
+            response.send('success');
+        });
     });
 };
 
@@ -76,7 +88,7 @@ function tryFunction(response, callback) {
         callback();
     } catch (e) {
         response.send(e.stackTrace, 500);
-        throw e;
+        return;
     }
 }
 
