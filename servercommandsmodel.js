@@ -20,7 +20,7 @@ ServerCommandsModel.prototype.get = function (request, response) {
                 {
                     result: "success",
                     title: timeAttackEvent.title,
-                    "start-date": timeAttackEvent.startDate
+                    "start-date": toUtcString(timeAttackEvent.startDate)
                 }
             ));
         });
@@ -90,6 +90,15 @@ function tryFunction(response, callback) {
         response.send(e.stackTrace, 500);
         return;
     }
+}
+
+function toUtcString(date) {
+    var year = date.getUTCFullYear();
+    var month = date.getUTCMonth();
+    var day = date.getUTCDay();
+    var hours = date.getUTCHours();
+    var minutes = date.getUTCMinutes();
+    return year + '/' + month + '/' + day + ' ' + hours + ':' + minutes;
 }
 
 exports.ServerCommandsModel = ServerCommandsModel;
