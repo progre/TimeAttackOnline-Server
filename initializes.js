@@ -49,6 +49,7 @@ function initializeServerCommands(server, dao) {
 
 function initializeDBAsync(pg, callback) {
     console.log('Initialize: DB');
+    /*
     if (!('DATABASE_URL' in process.env))
     {
         console.log('Initialize: DB --> has no database.');
@@ -56,6 +57,7 @@ function initializeDBAsync(pg, callback) {
         callback(dao);
         return;
     }
+    */
     pg.connect(process.env.DATABASE_URL, function(error, client) {
         console.log('Initialize: DB --> Succeeded. ' + error.toString());
         callback(new Dao(client));
