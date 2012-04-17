@@ -1,7 +1,7 @@
-var ServerCommandsModel = function (dao) {
+function ServerCommandsModel(dao) {
     /** @private */
     this.dao_ = dao;
-};
+}
 
 ServerCommandsModel.prototype.get = function (request, response) {
     tryFunction (response, function () {
@@ -44,9 +44,13 @@ ServerCommandsModel.prototype.set = function(request, response) {
 };
 
 ServerCommandsModel.prototype.daoTest = function(request, response) {
+    var self = this;
     tryFunction (response, function () {
+        if (self.dao_ === undefined || self.dao_.client_ === undefined) {
+            throw new Error();
+        }
         var daotest = require('./daotest');
-        new daotest.DaoTest(this.dao_).test(response);
+        new daotest.DaoTest(self.dao_).test(response);
     });
 };
 
@@ -71,8 +75,8 @@ function tryFunction(response, callback) {
     try {
         callback();
     } catch (e) {
-        response.send(e.toString(), 500);
-        return;
+        response.send(e.stackTrace, 500);
+        throw e;
     }
 }
 

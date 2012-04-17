@@ -62,8 +62,8 @@ function initializeTables(client) {
     });
 }
 
-function existsTableAsync(client, tableName, callback) {
-    var query = client.query('SHOW TABLE STATUS FROM $1', [tableName]);
+Dao.prototype.existsTableAsync = function (tableName, callback) {
+    var query = this.client_.query('SHOW TABLE STATUS FROM $1', [tableName]);
     query.on('error', onError);
     var exists = false;
     query.on('row', function (row) {
@@ -73,14 +73,14 @@ function existsTableAsync(client, tableName, callback) {
         console.log('PG: End: ' + row.toString() + error.toString());
         callback(exists);
     });
-}
+};
 
-function createTimeAttackEventsTable(client) {
+Dao.prototype.createTimeAttackEventsTable = function (client) {
     var query = client.query('CREATE TABLE time_attack_events (' +
         'pass_phrase TEXT primary key, title TEXT, start_date DATETIME)'
     );
     query.on('error', onError);
-}
+};
 
 function onError(error) {
     throw new Error('PG: Error: ' + error.toString());
