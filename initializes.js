@@ -58,7 +58,7 @@ function initializeDBAsync(pg, callback) {
         return;
     }
     */
-    pg.connect(process.env.DATABASE_URL, function(error, client) {
+    pg.connect(process.env.SHARED_DATABASE_URL, function(error, client) {
         console.log('Initialize: DB --> Succeeded. ' + error.toString());
         callback(new Dao(client));
         return;
