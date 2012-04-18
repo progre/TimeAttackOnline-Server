@@ -4,6 +4,7 @@ function ServerCommandsModel(dao) {
 }
 
 ServerCommandsModel.prototype.get = function (request, response) {
+    console.log('get');
     var self = this;
     tryFunction (response, function () {
         var passPhrase = request.param('pass-phrase');
@@ -28,12 +29,13 @@ ServerCommandsModel.prototype.get = function (request, response) {
 };
 
 ServerCommandsModel.prototype.add = function(request, response) {
+    console.log('add');
     var self = this;
     tryFunction (response, function () {
         var passPhrase = request.param('pass-phrase');
         var title = request.param('title');
         var startDate = new Date(request.param('start-date'));
-        console.log('start-date: ' + startDate.toString());
+        console.log('start-date: ' + toUtcString(startDate));
         if (passPhrase === undefined ||
             title === undefined ||
             startDate === undefined) {
@@ -87,6 +89,7 @@ function tryFunction(response, callback) {
     try {
         callback();
     } catch (e) {
+        console.log(e);
         response.send(e.stackTrace, 500);
         return;
     }
@@ -94,8 +97,8 @@ function tryFunction(response, callback) {
 
 function toUtcString(date) {
     var year = date.getUTCFullYear();
-    var month = date.getUTCMonth();
-    var day = date.getUTCDay();
+    var month = date.getUTCMonth() + 1;
+    var day = date.getUTCDate();
     var hours = date.getUTCHours();
     var minutes = date.getUTCMinutes();
     return year + '/' + month + '/' + day + ' ' + hours + ':' + minutes;
